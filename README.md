@@ -19,6 +19,9 @@ After dropping the two low-value features above: R² = 0.84, RMSE ≈ $21.9k (ne
 Salary range: trained two additional XGBoost models with quantile loss (reg:quantileerror, alpha = 0.1 and 0.9) alongside the point-estimate model, giving an 80% prediction interval. Empirical coverage on the test set: 80.9%.
 App: a Streamlit form collects the fields a real user would know; less-informative fields not exposed in the UI are filled with dataset medians so the model still receives a complete feature vector.
 Project structure
+
+
+
 ├── app.py                  # Streamlit app
 ├── train_and_save.py       # Reproduces preprocessing + trains/saves all models
 ├── requirements.txt        # Dependencies for deployment
@@ -29,6 +32,7 @@ Project structure
 ├── ui_options.json         # Dropdown values sourced from the training data
 ├── numeric_defaults.json   # Median/mode defaults for fields not exposed in the UI
 └── .streamlit/config.toml  # App theme
+
 Running locally
 bash
 pip install -r requirements.txt
