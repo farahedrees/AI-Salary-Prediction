@@ -1,1 +1,1 @@
-# AI and Data Science Salary Prediction
+# AI and Data Science Job Salaries Prediction
