@@ -1,0 +1,90 @@
+{
+  "job_title": [
+    "AI Engineer",
+    "Analytics Engineer",
+    "Business Intelligence Analyst",
+    "Computer Vision Engineer",
+    "Data Analyst",
+    "Data Engineer",
+    "Data Science Manager",
+    "Data Scientist",
+    "LLM Engineer",
+    "MLOps Engineer",
+    "Machine Learning Engineer",
+    "Research Scientist"
+  ],
+  "experience_level": [
+    "Entry",
+    "Mid",
+    "Senior",
+    "Lead",
+    "Executive"
+  ],
+  "employment_type": [
+    "Contract",
+    "Freelance",
+    "Full-time",
+    "Part-time"
+  ],
+  "company_size": [
+    "S",
+    "M",
+    "L"
+  ],
+  "company_location": [
+    "AU",
+    "BR",
+    "CA",
+    "DE",
+    "ES",
+    "FR",
+    "GB",
+    "IN",
+    "NL",
+    "PL",
+    "SG",
+    "US"
+  ],
+  "employee_residence": [
+    "AU",
+    "BR",
+    "CA",
+    "DE",
+    "ES",
+    "FR",
+    "GB",
+    "IN",
+    "NL",
+    "PL",
+    "SG",
+    "US"
+  ],
+  "industry": [
+    "Consulting",
+    "Education",
+    "Energy",
+    "Finance",
+    "Government",
+    "Healthcare",
+    "Manufacturing",
+    "Media",
+    "Retail",
+    "Technology"
+  ],
+  "education_level": [
+    "Self-taught",
+    "Bootcamp",
+    "Bachelors",
+    "Masters",
+    "PhD"
+  ],
+  "primary_language": [
+    "Java",
+    "Julia",
+    "Python",
+    "R",
+    "Rust",
+    "SQL",
+    "Scala"
+  ]
+}
