@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 
-st.set_page_config(page_title="Salary Range Predictor", page_icon="💰", layout="centered")
+st.set_page_config(page_title="Salary Range Predictor", layout="centered")
 
 # ---------- Load model artifacts (cached so this runs once) ----------
 @st.cache_resource
@@ -60,12 +60,7 @@ def build_feature_row(user_input: dict) -> pd.DataFrame:
     return df_row
 
 
-st.title("💰 Salary Range Predictor")
-st.write(
-    "Estimate a salary range for a tech/data role based on job title, "
-    "experience, and company details. Built on a tuned XGBoost model "
-    "(R² ≈ 0.85) trained on real-world-style salary data."
-)
+st.title("Salary Range Predictor")
 
 with st.form("salary_form"):
     col1, col2 = st.columns(2)
@@ -114,20 +109,7 @@ if submitted:
     low, high = min(low, point), max(high, point)
 
     st.subheader("Estimated salary range")
-    st.metric("Expected", f"${point:,.0f}")
-    c1, c2 = st.columns(2)
-    c1.metric("Low (10th percentile)", f"${low:,.0f}")
-    c2.metric("High (90th percentile)", f"${high:,.0f}")
-
-    st.caption(
-        "Range reflects an 80% prediction interval learned from the training "
-        "data — most similar roles fall within this band, but individual "
-        "offers can vary."
-    )
-
-st.divider()
-st.caption(
-    "Model: tuned XGBoost regressor, R² ≈ 0.85 on held-out test data. "
-    "Some lower-impact fields (e.g. bonus %, certifications) are filled "
-    "with dataset medians since they're not asked here."
-)
+    c1, c2, c3 = st.columns(3)
+    c1.metric("Low", f"${low:,.0f}")
+    c2.metric("Expected", f"${point:,.0f}")
+    c3.metric("High", f"${high:,.0f}")
