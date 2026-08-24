@@ -16,9 +16,9 @@ RANDOM_STATE = 42
 # ---------- Load & preprocess (mirrors the notebook) ----------
 df = pd.read_csv("Salaries.csv")
 df.drop_duplicates(inplace=True)
-df = df.drop(columns="salary_currency")
+df = df.drop(columns=["salary_currency", "primary_language", "manages_people"])
 
-bool_cols = ["has_ml_in_title", "manages_people", "uses_ai_tools_daily", "switched_jobs_last_year"]
+bool_cols = ["has_ml_in_title", "uses_ai_tools_daily", "switched_jobs_last_year"]
 for col in bool_cols:
     df[col] = df[col].astype(int)
 
@@ -30,7 +30,7 @@ df["company_size"] = df["company_size"].map(company_size_map)
 df["education_level"] = df["education_level"].map(education_level_map)
 
 remaining_cat_cols = ["job_title", "employment_type", "company_location",
-                       "employee_residence", "industry", "primary_language"]
+                       "employee_residence", "industry"]
 df = pd.get_dummies(df, columns=remaining_cat_cols, drop_first=True)
 
 y = df["salary_usd"]
@@ -86,7 +86,6 @@ options = {
     "employee_residence": sorted(raw["employee_residence"].unique().tolist()),
     "industry": sorted(raw["industry"].unique().tolist()),
     "education_level": ["Self-taught", "Bootcamp", "Bachelors", "Masters", "PhD"],
-    "primary_language": sorted(raw["primary_language"].unique().tolist()),
 }
 with open("ui_options.json", "w") as f:
     json.dump(options, f, indent=2)
