@@ -78,13 +78,4 @@
     "Masters",
     "PhD"
   ],
-  "primary_language": [
-    "Java",
-    "Julia",
-    "Python",
-    "R",
-    "Rust",
-    "SQL",
-    "Scala"
-  ]
 }
