@@ -14,7 +14,7 @@ Dropped duplicate rows and low-signal columns (salary_currency, primary_language
 Ordinal encoding for ordered categories (experience_level, company_size, education_level)
 One-hot encoding for nominal categories (job_title, employment_type, company_location, employee_residence, industry)
 Modeling:
-Tuned XGBoost via GridSearchCV → R² = 0.84, RMSE ≈ $21.8k
+Tuned XGBoost via GridSearchCV → R² = 0.85, RMSE ≈ $21.6k
 After dropping the two low-value features above: R² = 0.84, RMSE ≈ $21.9k (negligible change, confirming those features weren't adding value)
 Salary range: trained two additional XGBoost models with quantile loss (reg:quantileerror, alpha = 0.1 and 0.9) alongside the point-estimate model, giving an 80% prediction interval. Empirical coverage on the test set: 80.9%.
 App: a Streamlit form collects the fields a real user would know; less-informative fields not exposed in the UI are filled with dataset medians so the model still receives a complete feature vector.
