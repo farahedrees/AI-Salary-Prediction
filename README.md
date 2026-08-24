@@ -1,1 +1,1 @@
-# Ramen ratings analysis
+# AI and Data Science Salary Prediction
