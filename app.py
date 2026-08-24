@@ -27,7 +27,7 @@ company_size_map = {"S": 0, "M": 1, "L": 2}
 education_level_map = {"Self-taught": 0, "Bootcamp": 1, "Bachelors": 2, "Masters": 3, "PhD": 4}
 
 remaining_cat_cols = ["job_title", "employment_type", "company_location",
-                       "employee_residence", "industry", "primary_language"]
+                       "employee_residence", "industry"]
 
 
 def build_feature_row(user_input: dict) -> pd.DataFrame:
@@ -39,9 +39,8 @@ def build_feature_row(user_input: dict) -> pd.DataFrame:
     row["company_size"] = company_size_map[user_input["company_size"]]
     row["education_level"] = education_level_map[user_input["education_level"]]
 
-    # Direct numeric / boolean fields the user provided
+    # Direct numeric fields the user provided
     row["years_experience"] = user_input["years_experience"]
-    row["manages_people"] = int(user_input["manages_people"])
 
     # Numeric fields not asked in the UI -> sensible dataset defaults
     for k, v in numeric_defaults.items():
@@ -78,9 +77,6 @@ with st.form("salary_form"):
         company_size = st.selectbox("Company size", ["S", "M", "L"],
                                      format_func=lambda x: {"S": "Small", "M": "Medium", "L": "Large"}[x])
         industry = st.selectbox("Industry", ui_options["industry"])
-        primary_language = st.selectbox("Primary language", ui_options["primary_language"])
-
-    manages_people = st.checkbox("Manages people")
 
     submitted = st.form_submit_button("Predict salary range")
 
@@ -95,8 +91,6 @@ if submitted:
         "employee_residence": employee_residence,
         "company_size": company_size,
         "industry": industry,
-        "primary_language": primary_language,
-        "manages_people": manages_people,
     }
 
     X_row = build_feature_row(user_input)
