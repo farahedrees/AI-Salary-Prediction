@@ -1,22 +1,23 @@
 import json
 
-import anthropic
 import joblib
 import numpy as np
 import pandas as pd
 import streamlit as st
+from groq import Groq
 
 st.set_page_config(page_title="Salary Range Predictor", layout="centered")
 
-# ---------- Anthropic client ----------
+# ---------- Groq client ----------
 @st.cache_resource
-def get_claude_client():
-    api_key = st.secrets.get("ANTHROPIC_API_KEY")
+def get_groq_client():
+    api_key = st.secrets.get("GROQ_API_KEY")
     if not api_key:
         return None
-    return anthropic.Anthropic(api_key=api_key)
+    return Groq(api_key=api_key)
 
-client = get_claude_client()
+client = get_groq_client()
+GROQ_MODEL = "llama-3.3-70b-versatile"
 
 # ---------- Load model artifacts (cached so this runs once) ----------
 @st.cache_resource
@@ -143,12 +144,12 @@ if client is not None and "last_prediction" in st.session_state:
                 f"the inputs. Do not repeat the raw numbers back verbatim, focus on "
                 f"the reasoning (e.g. which factors likely push salary up or down)."
             )
-            response = client.messages.create(
-                model="claude-haiku-4-5-20251001",
+            response = client.chat.completions.create(
+                model=GROQ_MODEL,
                 max_tokens=300,
                 messages=[{"role": "user", "content": prompt}],
             )
-            explanation = response.content[0].text
+            explanation = response.choices[0].message.content
         st.write(explanation)
 
 # ---------- LLM: chat Q&A ----------
@@ -180,14 +181,14 @@ if client is not None:
 
         with st.chat_message("assistant"):
             with st.spinner("Thinking..."):
-                response = client.messages.create(
-                    model="claude-haiku-4-5-20251001",
+                messages = [{"role": "system", "content": system_prompt}] + st.session_state["chat_history"]
+                response = client.chat.completions.create(
+                    model=GROQ_MODEL,
                     max_tokens=500,
-                    system=system_prompt,
-                    messages=st.session_state["chat_history"],
+                    messages=messages,
                 )
-                reply = response.content[0].text
+                reply = response.choices[0].message.content
             st.write(reply)
         st.session_state["chat_history"].append({"role": "assistant", "content": reply})
 elif "last_prediction" in st.session_state:
-    st.info("Add an ANTHROPIC_API_KEY in Streamlit secrets to enable explanations and chat.")
+    st.info("Add a GROQ_API_KEY in Streamlit secrets to enable explanations and chat.")
