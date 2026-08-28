@@ -1,11 +1,22 @@
 import json
 
+import anthropic
 import joblib
 import numpy as np
 import pandas as pd
 import streamlit as st
 
 st.set_page_config(page_title="Salary Range Predictor", layout="centered")
+
+# ---------- Anthropic client ----------
+@st.cache_resource
+def get_claude_client():
+    api_key = st.secrets.get("ANTHROPIC_API_KEY")
+    if not api_key:
+        return None
+    return anthropic.Anthropic(api_key=api_key)
+
+client = get_claude_client()
 
 # ---------- Load model artifacts (cached so this runs once) ----------
 @st.cache_resource
@@ -107,3 +118,76 @@ if submitted:
     c1.metric("Low", f"${low:,.0f}")
     c2.metric("Expected", f"${point:,.0f}")
     c3.metric("High", f"${high:,.0f}")
+
+    # Save context for the explanation + chat, and reset any previous chat
+    st.session_state["last_prediction"] = {
+        "inputs": user_input,
+        "low": low,
+        "point": point,
+        "high": high,
+    }
+    st.session_state["chat_history"] = []
+
+# ---------- LLM: explain the prediction ----------
+if client is not None and "last_prediction" in st.session_state:
+    pred = st.session_state["last_prediction"]
+
+    if st.button("Explain this prediction"):
+        with st.spinner("Thinking..."):
+            prompt = (
+                f"A salary prediction model estimated a range for this profile: "
+                f"{pred['inputs']}. "
+                f"Predicted range: ${pred['low']:,.0f} (low) to ${pred['high']:,.0f} (high), "
+                f"expected ${pred['point']:,.0f}. "
+                f"In 2-3 plain sentences, explain why this range makes sense given "
+                f"the inputs. Do not repeat the raw numbers back verbatim, focus on "
+                f"the reasoning (e.g. which factors likely push salary up or down)."
+            )
+            response = client.messages.create(
+                model="claude-haiku-4-5-20251001",
+                max_tokens=300,
+                messages=[{"role": "user", "content": prompt}],
+            )
+            explanation = response.content[0].text
+        st.write(explanation)
+
+# ---------- LLM: chat Q&A ----------
+if client is not None:
+    st.divider()
+    st.subheader("Ask about salaries or careers")
+
+    if "chat_history" not in st.session_state:
+        st.session_state["chat_history"] = []
+
+    for msg in st.session_state["chat_history"]:
+        with st.chat_message(msg["role"]):
+            st.write(msg["content"])
+
+    user_msg = st.chat_input("Ask a question...")
+    if user_msg:
+        st.session_state["chat_history"].append({"role": "user", "content": user_msg})
+        with st.chat_message("user"):
+            st.write(user_msg)
+
+        system_prompt = "You are a helpful assistant answering general questions about tech/data careers and salaries. Keep answers concise."
+        if "last_prediction" in st.session_state:
+            pred = st.session_state["last_prediction"]
+            system_prompt += (
+                f" The user just got a salary prediction for this profile: "
+                f"{pred['inputs']}, range ${pred['low']:,.0f}-${pred['high']:,.0f}. "
+                f"Reference it if relevant to their question."
+            )
+
+        with st.chat_message("assistant"):
+            with st.spinner("Thinking..."):
+                response = client.messages.create(
+                    model="claude-haiku-4-5-20251001",
+                    max_tokens=500,
+                    system=system_prompt,
+                    messages=st.session_state["chat_history"],
+                )
+                reply = response.content[0].text
+            st.write(reply)
+        st.session_state["chat_history"].append({"role": "assistant", "content": reply})
+elif "last_prediction" in st.session_state:
+    st.info("Add an ANTHROPIC_API_KEY in Streamlit secrets to enable explanations and chat.")
